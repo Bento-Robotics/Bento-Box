@@ -1,67 +1,91 @@
 import os
-
-from ament_index_python.packages import get_package_share_path
+import yaml
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import Command, EnvironmentVariable, PathJoinSubstitution
+from launch_ros.actions import Node
+
+from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+
+from launch.actions import GroupAction
+from launch_ros.actions import PushRosNamespace
+
+from launch.substitutions import EnvironmentVariable, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 
-from launch_ros.actions import Node
-from launch_ros.parameter_descriptions import ParameterValue
 
 def generate_launch_description():
-    return LaunchDescription([
-        Node(
-            package='edu_robot',
-            executable='ethernet-gateway',
-            name='bento',
-            parameters=[PathJoinSubstitution(['./', 'parameters', 'bento-box.yaml'])],
-            namespace=EnvironmentVariable('EDU_ROBOT_NAMESPACE', default_value="bento"),
-            # prefix=['gdbserver localhost:3000'],
-            output='screen'
-        ),
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([
-                PathJoinSubstitution([
-                    FindPackageShare('edu_robot'),
-                    'launch',
-                    'eduard-diagnostic.launch.py'
-                ]),
+    robot_namespace = LaunchConfiguration('robot_namespace')
+
+    bento_drive = Node(
+        package='bento_drive',
+        executable='bento_drive_node',
+        name='bento_drive_node',
+        parameters=[ PathJoinSubstitution([ '/', 'launch-content', 'parameters', 'bento-box.yaml' ]) ],
+        output='screen',
+	emulate_tty=True,
+    )
+
+    joystick = Node(
+        package='joy_linux',
+        executable='joy_linux_node',
+    )
+
+    camera_ros_1 = Node(
+        package='camera_ros',
+        executable='camera_node',
+        name='camera_node_1',
+        parameters=[ PathJoinSubstitution([ '/', 'launch-content', 'parameters', 'camera_ros-1.yaml' ]) ],
+        namespace="cam1",
+        emulate_tty=True,
+    )
+
+    camera_ros_2 = Node(
+        package='camera_ros',
+        executable='camera_node',
+        name='camera_node_2',
+        parameters=[ PathJoinSubstitution([ '/', 'launch-content', 'parameters', 'camera_ros-2.yaml' ]) ],
+        namespace="cam2",
+        emulate_tty=True,
+    )
+
+    lidar = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('rplidar_ros'),
+                'launch',
+                'rplidar_a1_launch.py'
             ])
-        ),
-        
-        Node(
-            package='joy_linux',
-            executable='joy_linux_node',
-            parameters=[{'autorepeat_rate': 20.0}],
-            namespace=EnvironmentVariable('EDU_ROBOT_NAMESPACE', default_value="bento")
-        ),
+        ]),
+        launch_arguments={
+            'channel_type': 'serial',
+            'serial_port': '/dev/ttyUSB0',
+            'serial_baudrate': '115200',
+            'frame_id': 'laser',
+            'inverted': 'false',
+            'angle_compensate': 'true',
+            #'scan_mode': 'Sensitivity',
+        }.items(),
+    )
 
-        Node(
-            package='edu_robot_control',
-            executable='remote_control',
-            parameters=[ PathJoinSubstitution(['./', 'parameters', 'bento_gamepad.yaml'])],
-            namespace=EnvironmentVariable('EDU_ROBOT_NAMESPACE', default_value="bento")
-        ),
 
-        Node(
-            package='usb_cam',
-            namespace='Driver',
-            executable='usb_cam_node_exe',
-            name='CAM',
-            parameters=[(PathJoinSubstitution(['./', 'parameters', 'Driver_Camera.yaml']))]
+    return LaunchDescription([
+        DeclareLaunchArgument(
+            'robot_namespace',
+            default_value='bento',
+            description='set namespace for robot nodes'
         ),
-
-        Node(
-            package='usb_cam',
-            namespace='CV',
-            executable='usb_cam_node_exe',
-            name='CAM',
-            parameters=[(PathJoinSubstitution(['./', 'parameters', 'CV_Camera.yaml']))]
-        )
+        GroupAction(
+        actions=[
+            PushRosNamespace(robot_namespace),
+            joystick,
+            camera_ros_1,
+            camera_ros_2,
+            bento_drive,
+            lidar,
+        ])
     ])
-

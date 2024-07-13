@@ -7,15 +7,11 @@ services:
     user: root
     restart: always
     privileged: true
-    ipc: host
-    pid: host
-    mem_limit: 300mb
     environment:
         - EDU_ROBOT_NAMESPACE=bento
     network_mode: "host"
     volumes:
-      - './launch-content:/launch-content'
+      - './launch-content:/launch-content:ro'
       - '/dev:/dev'
-    devices:
-      - '/dev:/dev'
-    command: bash -c 'cd /launch-content; ros2 launch bento-box.launch.py'
+      - '/run/udev:/run/udev' # libcamera won't work without this
+    command: bash -c 'while true; do cansend can0 580#0241AD347300; sleep 1; done&  ros2 launch /launch-content/bento-box.launch.py robot_namespace:="bento_box"'

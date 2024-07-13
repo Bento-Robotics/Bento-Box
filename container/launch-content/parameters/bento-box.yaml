@@ -1,101 +1,47 @@
+# control_frequency: 16000
+# max_rpm: 204.5
+# weight_low_pass_encoder: 0.8
+# weight_low_pass_set_point: 0.8
+
 /**:
   ros__parameters:
-    enable_collision_avoidance: true
-    tf_base_frame: base_link
-    tf_footprint_frame: base_footprint
-    use_sim_time: false
+    usingPowerManagementBoard: false
+    verbosity: false
+    canInterface: can0
+    frequencyScale: 32
+    inputWeight: 0.2
+    maxPulseWidth: 100
+    timeout: 300
+    kp: 0.5
+    ki: 40.0
+    kd: 0.0
+    antiWindup: 1
+    responseMode: 0
 
-    imu:
-      fusion_weight: 0.005
-      mounting_orientation:
-        pitch: 0.0
-        roll: 0.0
-        yaw: 0.0
-      raw_data_mode: false
+    controllers: 2
 
-    motor_a:
-      closed_loop: true
-      control_frequency: 16000
-      encoder_inverted: true
-      encoder_ratio: 2048.0
-      gear_ratio: 44.0
-      max_rpm: 204.5
-      pid/kd: 0.0
-      pid/ki: 40.0
-      pid/kp: 0.5
-      weight_low_pass_encoder: 0.8
-      weight_low_pass_set_point: 0.8
+    controller0:
+      canID: 0
+      gearRatio: 44.0
+      encoderRatio: 2048.0
+      rpmMax: 204.0
+      invertEnc: 1
+      drive0:
+        channel: 0
+        kinematics: [-3.0, 0.0, -6.1]
+      drive1:
+        channel: 1
+        kinematics: [3.0, 0.0, -6.1]
 
-    motor_b:
-      closed_loop: true
-      control_frequency: 16000
-      encoder_inverted: true
-      encoder_ratio: 2048.0
-      gear_ratio: 44.0
-      max_rpm: 204.5
-      pid/kd: 0.0
-      pid/ki: 40.0
-      pid/kp: 0.5
-      weight_low_pass_encoder: 0.8
-      weight_low_pass_set_point: 0.8
-
-    motor_c:
-      closed_loop: true
-      control_frequency: 16000
-      encoder_inverted: true
-      encoder_ratio: 2048.0
-      gear_ratio: 44.0
-      max_rpm: 204.5
-      pid/kd: 0.0
-      pid/ki: 40.0
-      pid/kp: 0.5
-      weight_low_pass_encoder: 0.8
-      weight_low_pass_set_point: 0.8
-
-    motor_d:
-      closed_loop: true
-      control_frequency: 16000
-      encoder_inverted: true
-      encoder_ratio: 2048.0
-      gear_ratio: 44.0
-      max_rpm: 204.5
-      pid/kd: 0.0
-      pid/ki: 40.0
-      pid/kp: 0.5
-      weight_low_pass_encoder: 0.8
-      weight_low_pass_set_point: 0.8
-
-    range:
-      front:
-        left:
-          field_of_view: 0.1745329201221466
-          range_max: 5.0
-          range_min: 0.01
-
-        right:
-          field_of_view: 0.1745329201221466
-          range_max: 5.0
-          range_min: 0.01
-
-      rear:
-        left:
-          field_of_view: 0.1745329201221466
-          range_max: 5.0
-          range_min: 0.01
-
-        right:
-          field_of_view: 0.1745329201221466
-          range_max: 5.0
-          range_min: 0.01
-
-    skid:
-      length:
-        x: 0.25
-        y: 0.32
-      wheel_diameter: 0.17
-
-    mecanum:
-      length:
-        x: 0.25
-        y: 0.36
-      wheel_diameter: 0.1
+    controller1:
+      canID: 1
+      gearRatio: 44.0
+      encoderRatio: 2048.0
+      rpmMax: 204.0
+      invertEnc: 1
+      drive0:
+        channel: 0
+        kinematics: [3.0, 0.0, -6.1]
+      drive1:
+        channel: 1
+        kinematics: [-3.0, 0.0, -6.1]
