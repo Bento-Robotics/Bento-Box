@@ -5,6 +5,7 @@ services:
     image: bentorobotics/rosbox:robot
     container_name: bento-box-ros
     user: root
+    init: true
     restart: always
     privileged: true
     environment:
