@@ -4,7 +4,8 @@
     role: "video"    # stream role (one of {raw, still, video, viewfinder})
     width: 640       # image dimensions
     height: 480      # "
-    camera: 0        # camera ID (ID - 1)
+    camera: 1        # camera ID (ID - 1)
+    format: "MJPEG"
 
 # get camera controls:
 # `cam --list-controls -cₓ`
