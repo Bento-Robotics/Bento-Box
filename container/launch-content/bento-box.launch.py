@@ -4,9 +4,6 @@ import yaml
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 
@@ -54,23 +51,20 @@ def generate_launch_description():
         emulate_tty=True,
     )
 
-    lidar = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            PathJoinSubstitution([
-                FindPackageShare('rplidar_ros'),
-                'launch',
-                'rplidar_a1_launch.py'
-            ])
-        ]),
-        launch_arguments={
-            'channel_type': 'serial',
+    lidar = Node(
+        name='rplidar_composition',
+        package='rplidar_ros',
+        executable='rplidar_composition',
+        output='screen',
+        emulate_tty=True,
+        parameters=[{
             'serial_port': '/dev/ttyUSB0',
-            'serial_baudrate': '115200',
+            'serial_baudrate': 115200,  # A1 / A2
+            # 'serial_baudrate': 256000, # A3
             'frame_id': 'laser',
-            'inverted': 'false',
-            'angle_compensate': 'true',
-            #'scan_mode': 'Sensitivity',
-        }.items(),
+            'inverted': False,
+            'angle_compensate': True,
+        }],
     )
 
     tf2_node = Node(

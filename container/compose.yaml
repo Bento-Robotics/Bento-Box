@@ -2,7 +2,7 @@ version: "3.0"
 
 services:
   bento-box:
-    image: bentorobotics/rosbox:robot
+    image: bentorobotics/rosbox:robot-jazzy
     container_name: bento-box-ros
     user: root
     init: true
