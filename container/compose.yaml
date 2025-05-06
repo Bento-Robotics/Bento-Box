@@ -15,4 +15,5 @@ services:
       - './launch-content:/launch-content:ro'
       - '/dev:/dev'
       - '/run/udev:/run/udev' # libcamera won't work without this
-    command: bash -c 'while true; do cansend can0 580#0241AD347300; sleep 1; done&  ros2 launch /launch-content/bento-box.launch.py robot_namespace:="bento_box"'
+    working_dir: '/launch-content'
+    command: 'ros2 launch bento-box.launch.py robot_namespace:="bento_box"'
