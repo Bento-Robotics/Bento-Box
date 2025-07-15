@@ -1,9 +1,7 @@
 [connection]
-id=Bento-Box WiFi
-uuid=94fbec47-63c3-426a-9c20-98cbb43936b8
+id=Bento-Box_WiFi
+uuid=2eda74f7-6db4-4775-af8a-914d97761ffe
 type=wifi
-interface-name=wlan0
-timestamp=1720826238
 
 [wifi]
 band=a
@@ -17,10 +15,7 @@ psk=Bento-Box
 
 [ipv4]
 address1=192.168.38.1/24
-ignore-auto-dns=true
-ignore-auto-routes=true
 method=shared
-route1=192.168.38.1/24,192.168.38.1
 
 [ipv6]
 addr-gen-mode=default
