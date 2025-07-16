@@ -10,6 +10,7 @@ from launch.substitutions import LaunchConfiguration
 from launch.actions import GroupAction
 from launch_ros.actions import PushRosNamespace
 
+from launch.actions import ExecuteProcess
 from launch.substitutions import EnvironmentVariable, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 
@@ -26,6 +27,15 @@ def generate_launch_description():
         remappings=[('odom', '/odom' ), ('pose', '/pose')],
         output='screen',
 	emulate_tty=True,
+    )
+
+    # There is some bug in bento_drive,
+    # where the motorcontrollers de-enable without an eduart power-management board sending something.
+    # Bento-Box has no such board, so we just send the 'important' thing the board would send
+    # (I think it is a voltage readout, because bento_drive complains about undervoltage)
+    can_fix = ExecuteProcess(
+        cmd=[['while true; do cansend can0 580#0241AD347300; sleep 1; done']],
+        shell=True,
     )
 
     joystick = Node(
@@ -93,5 +103,6 @@ def generate_launch_description():
             #lidar,
         ]),
         lidar,
-        tf2_node
+        tf2_node,
+        can_fix,
     ])
