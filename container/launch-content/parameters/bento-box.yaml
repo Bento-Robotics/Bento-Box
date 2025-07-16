@@ -28,10 +28,10 @@
       invertEnc: 1
       drive0:
         channel: 0
-        kinematics: [9.1, 0.0, -8.3]
+        kinematics: [-9.1, 0.0, -8.3]
       drive1:
         channel: 1
-        kinematics: [-9.1, 0.0, -8.3]
+        kinematics: [9.1, 0.0, -8.3]
 
     controller1:
       canID: 1
@@ -41,7 +41,7 @@
       invertEnc: 1
       drive0:
         channel: 0
-        kinematics: [-9.1, 0.0, -8.3]
+        kinematics: [9.1, 0.0, -8.3]
       drive1:
         channel: 1
-        kinematics: [9.1, 0.0, -8.3]
+        kinematics: [-9.1, 0.0, -8.3]
