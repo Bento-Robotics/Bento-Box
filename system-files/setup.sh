@@ -20,6 +20,7 @@ install_thingy() {
 install_thingy 600 root root "/etc/NetworkManager/system-connections/Bento-Box_WiFi.nmconnection"
 install_thingy 644 root root "/etc/NetworkManager/dnsmasq-shared.d/bento-box.conf"
 install_thingy 644 root root "/etc/systemd/network/80-can.network"
+install_thingy 755 root root "/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf"
 
 printf "${GREEN}set wifi region? (y/n)${NC}%s "
 read -r YN
