@@ -6,14 +6,14 @@ NC='\033[0m'
 # source is assumed to be "./destination"
 install_thingy() {
   if [ -e $4 ]; then
-    printf "${YELLOW}WARN: file '$4' already exists. Overwrite? (y/n)${NC}%s "
+    printf "${YELLOW}WARN: file '$4' already exists. Overwrite? (y/n)${NC}%s \n"
     read -r YN
   else
     YN="Y"
   fi
   if [ "$YN" = "y" ]||[ "$YN" = "Y" ]; then
     install -D -m $1 -o $2 -g $3 "./$4" $4
-    printf "${GREEN}OK: $4${NC}%s "
+    printf "${GREEN}OK: $4${NC}%s \n"
   fi
 }
 
@@ -22,13 +22,13 @@ install_thingy 644 root root "/etc/NetworkManager/dnsmasq-shared.d/bento-box.con
 install_thingy 644 root root "/etc/systemd/network/80-can.network"
 install_thingy 755 root root "/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf"
 
-printf "${GREEN}set wifi region? (y/n)${NC}%s "
+printf "${GREEN}set wifi region? (y/n)${NC}%s \n"
 read -r YN
 if [ "$YN" = "y" ]||[ "$YN" = "Y" ]; then
   RET=1
   while [ $RET != 0 ]; do
-    printf "${GREEN}what region? (2 char name)${NC}%s "
-    read -n2 -r REG
+    printf "${GREEN}what region? (ISO/IEC 3166-1 alpha2, 2 char name)${NC}%s \n"
+    read -r REG
     printf "\n"
     sudo iw reg set "${REG}"
     RET=$?
