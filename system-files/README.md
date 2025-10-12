@@ -15,14 +15,28 @@ Versioning these files helps keep track of changes, and turns worst-case scenari
 ```shell
 # Install software (everything after 'git' is optional)
 sudo apt update
-sudo apt install docker.io docker-compose-v2 dnsmasq-base systemd-networkd git gh can-utils btop tree iperf3
+sudo apt install docker.io docker-compose dnsmasq-base git gh can-utils btop tree iperf3  # presume that systemd-networkd is preinstalled, like on raspi
 sudo usermod -aG docker $USER
-sudo reboot
-
-# (Set up this Repo and) Build image and start container
-#git clone https://github.com/Bento-Robotics/Bento-Box.git
-cd Bento-Box/container
-docker compose up -d  # if it can't find ros:jazzy, retry after doing `docker pull docker.io/library/ros:jazzy`
+# reboot before using docker
+```
+```shell
+# Set up this Repo, Build image, and start container
+cd ~/
+git clone https://github.com/Bento-Robotics/Bento-Box.git
+cd Bento-Box/system-files/  # set up host configs
+sudo ./setup.sh
+cd Bento-Box/container/  # set up container
+docker compose up -d
+cd ~/
+# if it can't find ros:jazzy, retry after doing `docker pull docker.io/library/ros:jazzy`
+sudo reboot  # apply changes
+```
+```shell
+# Set up git
+gh auth login
+# follow instructions and log into github
+git config --global user.email "bento.robotics@gmail.com"
+git config --global user.name "Bento-Box"
 ```
 
 
