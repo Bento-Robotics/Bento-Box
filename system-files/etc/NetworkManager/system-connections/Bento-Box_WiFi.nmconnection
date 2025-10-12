@@ -5,7 +5,7 @@ type=wifi
 
 [wifi]
 band=a
-channel=165
+channel=48
 mode=ap
 ssid=Bento-Box
 
