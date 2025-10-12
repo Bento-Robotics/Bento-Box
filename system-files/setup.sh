@@ -1,3 +1,10 @@
+#!/bin/bash
+
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
+
 GREEN='\033[1;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
