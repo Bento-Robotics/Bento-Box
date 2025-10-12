@@ -6,6 +6,14 @@ Versioning these files helps keep track of changes, and turns worst-case scenari
 > but prefer Debian as it is designed for servers and therefore very stable and lightweight.  
 > Docker gets around OS restrictions (such as ROS only distributing for ubuntu).
 
+## Install configuration
+Files are laid out in the same way that they would be in the system.
+> e.g. `etc/NetworkManager/xyz` → `/etc/NetworkManager/xyz`
+
+`./setup.sh` provided in this directory does the exact same as the manual steps.
+
+⚠️ **reboot to make changes take effect**, once you are done ofc
+
 
 ## Install software
 
@@ -15,20 +23,29 @@ Versioning these files helps keep track of changes, and turns worst-case scenari
 ```shell
 # Install software (everything after 'git' is optional)
 sudo apt update
-sudo apt install docker.io docker-compose dnsmasq git gh can-utils btop tree iperf3 -y  # presume that systemd-networkd is preinstalled, like on raspi
+sudo apt install docker.io docker-compose dnsmasq git gh lazygit can-utils i2c-tools libcamera-tools btop tree iperf3 -y  # presume that systemd-networkd is preinstalled, like on raspi
 # say yes to auto-start iperf3
+
+# Set up user docker permissions
+sudo usermod -aG docker $USER
 ```
 ```shell
 # Set up this Repo, Build image, and start container
 cd ~/
 git clone https://github.com/Bento-Robotics/Bento-Box.git
-cd Bento-Box/system-files/  # set up host configs
-sudo ./setup.sh
-```
-```shell
 
-# Set up container
-cd Bento-Box/container/
+# set up host configs
+cd ~/Bento-Box/system-files/
+sudo ./setup.sh
+
+# ℹ️ you will lose connection,
+# just wait for the reboot and WiFi coming up.
+sudo reboot
+```
+> Log back in to robot, now WiFi and Ethernet work as "hotspots"
+```shell
+# Set up container (needs Internet. I suggest USB tethering with a phone)
+cd ~/Bento-Box/container/
 sudo docker compose up -d
 cd ~/
 ```
@@ -39,42 +56,35 @@ gh auth login
 git config --global user.email "bento.robotics@gmail.com"
 git config --global user.name "Bento-Box"
 ```
-```shell
-# Set up user docker permissions
-sudo usermod -aG docker $USER
-
-# Apply changes
-sudo reboot
-```
-
-## Install configuration
-Files are laid out in the same way that they would be in the system.
-> e.g. `etc/NetworkManager/xyz` → `/etc/NetworkManager/xyz`
-
-⚠️ **reboot to make changes take effect**, both for automatic and manual
-
-### Automatic
-Use `./setup.sh` provided in this directory.
-It does the exact same as the manual steps, just automatically.
-It will ask for you password so it can use sudo to copy files into /etc.
 
 
-### WiFi & Ethernet - NetworkManager
-> /etc/NetworkManager/system-connections/*
-```
-sudo chmod 600 /etc/NetworkManager/system-connections/*
-sudo chown root /etc/NetworkManager/system-connections/*
-sudo chgrp root /etc/NetworkManager/system-connections/*
-```
-
-set country `sudo iw reg set DE` (or whatever county you are in)
+## Manual install
 
 ### CAN - systemd-networkd
 > /etc/systemd/network/80-can.network
-```
+```shell
 sudo systemctl enable systemd-networkd
+sudo systemctl start systemd-networkd
 ```
 
-### DNS - dnsmasq
+### DNS & DHCP - dnsmasq
+> /etc/dnsmasq.d/00-bento-box.conf
+```shell
+sudo chmod 600 /etc/dnsmasq.d/00-bento-box.conf
+sudo chown root /etc/dnsmasq.d/00-bento-box.conf
+sudo chgrp root /etc/dnsmasq.d/00-bento-box.conf
 
-TODO
+sudo systemctl enable dnsmasq.service  # ignore perl's complaining
+sudo systemctl start dnsmasq.service
+```
+
+### WiFi & Ethernet - netplan
+> /etc/netplan/00-bento-box.yaml
+```shell
+sudo chmod 600 /etc/netplan/00-bento-box.yaml
+sudo chown root /etc/netplan/00-bento-box.yaml
+sudo chgrp root /etc/netplan/00-bento-box.yaml
+
+sudo raspi-config nonint do_wifi_country DE  # or whatever county you are in
+sudo netplan apply
+```

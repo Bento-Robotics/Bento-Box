@@ -13,36 +13,29 @@ NC='\033[0m'
 # source is assumed to be "./destination"
 install_thingy() {
   if [ -e $4 ]; then
-    printf "${YELLOW}WARN: file '$4' already exists. Overwrite? (y/n)${NC}%s \n"
+    printf "${YELLOW}WARN: file '$4' already exists. Overwrite? (y/n) ${NC}%s"
     read -r YN
   else
     YN="Y"
   fi
   if [ "$YN" = "y" ]||[ "$YN" = "Y" ]; then
     install -D -m $1 -o $2 -g $3 "./$4" $4
-    printf "${GREEN}OK: $4${NC}%s \n"
+    printf "${GREEN}OK: Installed '$4${NC}%s' \n\n"
   fi
 }
 
-install_thingy 600 root root "/etc/NetworkManager/system-connections/Bento-Box_WiFi.nmconnection"
-install_thingy 600 root root "/etc/NetworkManager/system-connections/Bento-Box_Eth.nmconnection"
-install_thingy 644 root root "/etc/NetworkManager/dnsmasq.d/00-bento-box.conf"
-install_thingy 644 root root "/etc/NetworkManager/conf.d/00-use-dnsmasq.conf"
+install_thingy 600 root root "/etc/netplan/00-bento-box.yaml"
+install_thingy 600 root root "/etc/dnsmasq.d/00-bento-box.conf"
 install_thingy 644 root root "/etc/systemd/network/80-can.network"
-# seems to not be needed after DNS was fixed?
-#install_thingy 755 root root "/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf"
 
-# enable CAN networking
-systemctl enable systemd-networkd
 
-printf "${GREEN}set wifi region? (y/n)${NC}%s \n"
+printf "${GREEN}set wifi region? (y/n)${NC}%s "
 read -r YN
 if [ "$YN" = "y" ]||[ "$YN" = "Y" ]; then
   RET=1
   while [ $RET != 0 ]; do
-    printf "${GREEN}what region? (ISO/IEC 3166-1 alpha2, 2 char name)${NC}%s \n"
+    printf "${GREEN}what region? (ISO/IEC 3166-1 alpha2, 2 char name)${NC}%s "
     read -r REG
-    printf "\n"
     # We're running on raspi here, otherwise use `iw reg`
     raspi-config nonint do_wifi_country "${REG}"
     #sudo iw reg set "${REG}"
@@ -50,4 +43,17 @@ if [ "$YN" = "y" ]||[ "$YN" = "Y" ]; then
   done
   sudo iw reg get | grep country
 fi
+
+# enable CAN networking
+systemctl enable systemd-networkd
+systemctl start systemd-networkd
+printf "${GREEN}OK: enabled & started systemd-networkd \n"
+# set up networking
+netplan apply
+printf "${GREEN}OK: configured networking \n"
+# enable DHCP & DNS server
+systemctl enable dnsmasq &>/dev/null #STFU sysV
+systemctl start dnsmasq
+printf "${GREEN}OK: enabled & started dnsmasq \n ${NC}"
+
 
