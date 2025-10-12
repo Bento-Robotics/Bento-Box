@@ -1,0 +1,26 @@
+[connection]
+id=Bento-Box_Ethernet
+type=ethernet
+uuid=50c74a51-feb6-39c8-bdd1-324b0579e8b6
+interface-name=eth0
+#Netplan: passthrough setting
+autoconnect-priority=-999
+#Netplan: passthrough setting
+timestamp=1760131498
+
+[ethernet]
+wake-on-lan=1
+
+[ipv4]
+method=manual
+address1=192.168.39.1/24
+#Netplan: passthrough setting
+never-default=true
+
+[ipv6]
+#Netplan: passthrough override
+method=disabled
+#Netplan: passthrough setting
+addr-gen-mode=default
+
+[proxy]
