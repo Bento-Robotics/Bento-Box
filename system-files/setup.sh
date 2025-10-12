@@ -19,10 +19,14 @@ install_thingy() {
 
 install_thingy 600 root root "/etc/NetworkManager/system-connections/Bento-Box_WiFi.nmconnection"
 install_thingy 600 root root "/etc/NetworkManager/system-connections/Bento-Box_Eth.nmconnection"
-install_thingy 644 root root "/etc/NetworkManager/dnsmasq-shared.d/bento-box.conf"
+install_thingy 644 root root "/etc/NetworkManager/dnsmasq.d/00-bento-box.conf"
+install_thingy 644 root root "/etc/NetworkManager/conf.d/00-use-dnsmasq.conf"
 install_thingy 644 root root "/etc/systemd/network/80-can.network"
 # seems to not be needed after DNS was fixed?
 #install_thingy 755 root root "/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf"
+
+# enable CAN networking
+systemctl enable systemd-networkd
 
 printf "${GREEN}set wifi region? (y/n)${NC}%s \n"
 read -r YN
@@ -32,7 +36,9 @@ if [ "$YN" = "y" ]||[ "$YN" = "Y" ]; then
     printf "${GREEN}what region? (ISO/IEC 3166-1 alpha2, 2 char name)${NC}%s \n"
     read -r REG
     printf "\n"
-    sudo iw reg set "${REG}"
+    # We're running on raspi here, otherwise use `iw reg`
+    raspi-config nonint do_wifi_country "${REG}"
+    #sudo iw reg set "${REG}"
     RET=$?
   done
   sudo iw reg get | grep country
