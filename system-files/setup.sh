@@ -13,14 +13,14 @@ NC='\033[0m'
 # source is assumed to be "./destination"
 install_thingy() {
   if [ -e $4 ]; then
-    printf "${YELLOW}WARN: file '$4' already exists. Overwrite? (y/n) ${NC}%s"
+    printf "${YELLOW}WARN: file '$4' already exists. Overwrite? (y/n) ${NC}"
     read -r YN
   else
     YN="Y"
   fi
   if [ "$YN" = "y" ]||[ "$YN" = "Y" ]; then
     install -D -m $1 -o $2 -g $3 "./$4" $4
-    printf "${GREEN}OK: Installed '$4${NC}%s' \n\n"
+    printf "${GREEN}OK: Installed '$4${NC}' \n\n"
   fi
 }
 
@@ -34,7 +34,7 @@ read -r YN
 if [ "$YN" = "y" ]||[ "$YN" = "Y" ]; then
   RET=1
   while [ $RET != 0 ]; do
-    printf "${GREEN}what region? (ISO/IEC 3166-1 alpha2, 2 char name)${NC}%s "
+    printf "${GREEN}what region? (ISO/IEC 3166-1 alpha2, 2 char name)${NC}"
     read -r REG
     # We're running on raspi here, otherwise use `iw reg`
     raspi-config nonint do_wifi_country "${REG}"
@@ -44,16 +44,24 @@ if [ "$YN" = "y" ]||[ "$YN" = "Y" ]; then
   sudo iw reg get | grep country
 fi
 
+
 # enable CAN networking
 systemctl enable systemd-networkd
 systemctl start systemd-networkd
-printf "${GREEN}OK: enabled & started systemd-networkd \n"
+printf "${GREEN}OK: enabled & started systemd-networkd \n ${NC}"
 # set up networking
 netplan apply
-printf "${GREEN}OK: configured networking \n"
+printf "${GREEN}OK: configured networking \n ${NC}"
 # enable DHCP & DNS server
 systemctl enable dnsmasq &>/dev/null #STFU sysV
 systemctl start dnsmasq
 printf "${GREEN}OK: enabled & started dnsmasq \n ${NC}"
 
 
+PI_FW="/boot/firmware/config.txt"
+if grep -q "bento robot" $PI_FW ; then
+  printf "${YELLOW}WARN: Pi config, ${PI_FW}, already was modified. Skipping \n ${NC}"
+else
+  cat ./boot/firmware/config.txt >>/boot/firmware/config.txt
+  printf "${GREEN}OK: Pi config, ${PI_FW}, modified. \n ${NC}"
+fi

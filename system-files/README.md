@@ -88,3 +88,11 @@ sudo chgrp root /etc/netplan/00-bento-box.yaml
 sudo raspi-config nonint do_wifi_country DE  # or whatever county you are in
 sudo netplan apply
 ```
+
+### Raspi Config
+> /boot/firmware/config.txt
+
+⚠️ **DON'T overwrite it!!**, only append what we need like so:
+```shell
+echo ./boot/firmware/config.txt >>/boot/firmware/config.txt
+```
