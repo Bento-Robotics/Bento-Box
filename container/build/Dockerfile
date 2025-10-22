@@ -10,6 +10,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install \
                  ros-jazzy-libcamera \
                  ros-jazzy-zbar-ros \
                  ros-jazzy-rplidar-ros \
+                 python3-pip python3-lgpio \
                  btop libcamera-tools can-utils \
                 -y && rm -rf /var/lib/apt/lists/*
 
