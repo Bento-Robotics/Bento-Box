@@ -45,19 +45,6 @@ if [ "$YN" = "y" ]||[ "$YN" = "Y" ]; then
 fi
 
 
-# enable CAN networking
-systemctl enable systemd-networkd
-systemctl start systemd-networkd
-printf "${GREEN}OK: enabled & started systemd-networkd \n ${NC}"
-# set up networking
-netplan apply
-printf "${GREEN}OK: configured networking \n ${NC}"
-# enable DHCP & DNS server
-systemctl enable dnsmasq &>/dev/null #STFU sysV
-systemctl start dnsmasq
-printf "${GREEN}OK: enabled & started dnsmasq \n ${NC}"
-
-
 PI_FW="/boot/firmware/config.txt"
 if grep -q "bento robot" $PI_FW ; then
   printf "${YELLOW}WARN: Pi config, ${PI_FW}, already was modified. Skipping \n ${NC}"
@@ -65,3 +52,17 @@ else
   cat ./boot/firmware/config.txt >>/boot/firmware/config.txt
   printf "${GREEN}OK: Pi config, ${PI_FW}, modified. \n ${NC}"
 fi
+
+# enable CAN networking
+systemctl enable systemd-networkd
+systemctl start systemd-networkd
+printf "${GREEN}OK: enabled & started systemd-networkd \n ${NC}"
+# enable DHCP & DNS server
+#  technically this should be done after netplan
+#  but you lose connection once netplan is done so have no Idea if it worked
+systemctl enable dnsmasq &>/dev/null #STFU sysV
+systemctl start dnsmasq
+printf "${GREEN}OK: enabled & started dnsmasq \n ${NC}"
+# set up networking
+netplan apply
+printf "${GREEN}OK: configured networking \n ${NC}"
