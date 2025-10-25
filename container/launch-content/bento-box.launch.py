@@ -77,15 +77,12 @@ def generate_launch_description():
         }],
     )
 
-    tf2_node = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='base_link_to_base_tof',
-        arguments=["--x", "0.0","--y", "0.0","--z", "0.1","--roll", "0.0","--pitch", "0.0","--yaw", "0.0",
-        #TODO add values
-        "--frame-id", "base_link","--child-frame-id", "laser"],
-        output="screen"
+    slam = IncludeLaunchDescription(
+        PathJoinSubstitution([
+            '.','bento_slam.launch.py'
+        ]),
     )
+
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -100,9 +97,8 @@ def generate_launch_description():
             camera_ros_1,
             camera_ros_2,
             bento_drive,
-            #lidar,
+            lidar,
+            slam,
         ]),
-        lidar,
-        tf2_node,
         can_fix,
     ])

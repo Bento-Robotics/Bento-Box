@@ -10,6 +10,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install \
                  ros-jazzy-libcamera \
                  ros-jazzy-zbar-ros \
                  ros-jazzy-rplidar-ros \
+                 ros-jazzy-slam-toolbox \
                  python3-pip python3-lgpio \
                  btop libcamera-tools can-utils \
                 -y && rm -rf /var/lib/apt/lists/*
@@ -23,6 +24,7 @@ WORKDIR /bento_ws
 RUN cd src &&\
 	 git clone https://github.com/Bento-Robotics/bento_drive &&\
 	 git clone https://github.com/Bento-Robotics/TunnelVision &&\
+         git clone https://github.com/MAPIRlab/rf2o_laser_odometry.git &&\
    cd ..
 
 # Build workspace
