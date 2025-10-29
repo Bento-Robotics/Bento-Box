@@ -10,7 +10,7 @@ from launch.substitutions import LaunchConfiguration
 from launch.actions import GroupAction
 from launch_ros.actions import PushRosNamespace
 
-from launch.actions import ExecuteProcess
+from launch.actions import ExecuteProcess, IncludeLaunchDescription
 from launch.substitutions import EnvironmentVariable, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 
@@ -71,9 +71,10 @@ def generate_launch_description():
             'serial_port': '/dev/ttyUSB0',
             'serial_baudrate': 115200,  # A1 / A2
             # 'serial_baudrate': 256000, # A3
-            'frame_id': 'laser',
+            'frame_id': PathJoinSubstitution ([ robot_namespace, 'laser_frame' ]),
             'inverted': False,
             'angle_compensate': True,
+            'use_sim_time' : True,
         }],
     )
 
@@ -81,6 +82,9 @@ def generate_launch_description():
         PathJoinSubstitution([
             '.','bento_slam.launch.py'
         ]),
+        launch_arguments={
+            'robot_namespace' : robot_namespace,
+        }.items()
     )
 
 
@@ -98,7 +102,7 @@ def generate_launch_description():
             camera_ros_2,
             bento_drive,
             lidar,
-            slam,
         ]),
+        slam,  # already namespaced
         can_fix,
     ])
