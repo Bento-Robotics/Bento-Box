@@ -12,7 +12,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install \
                  ros-jazzy-rplidar-ros \
                  ros-jazzy-slam-toolbox \
                  python3-pip python3-lgpio \
-                 btop libcamera-tools can-utils \
+                 libcamera-tools can-utils i2c-tools \
                 -y && rm -rf /var/lib/apt/lists/*
 
 
